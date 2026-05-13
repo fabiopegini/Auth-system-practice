@@ -1,0 +1,51 @@
+.base_form {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.container_input {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3rem;
+}
+
+.base_input {
+  min-width: 12rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 2px 0 gray;
+  font-size: 1rem;
+}
+
+.base_button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.95rem;
+  background-color: #eee;
+  box-shadow: 0 0 1px 0 #222;
+  border: none;
+  border-radius: 0.25rem;
+  transition: background-color 100ms ease-out;
+}
+
+.base_button:hover {
+  background-color: #ddd;
+  user-select: none;
+  cursor: pointer;
+}
+
+.title_lv2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.margin_t {
+  margin-top: 1rem;
+}
+.margin_b {
+  margin-bottom: 1rem;
+}
