@@ -1,14 +1,17 @@
 // API calls register/login 
 // Token handlers for login
 interface User {
-  
+  name: string,
+  email: string,
+  username: string,
+  password: string
 }
 
 const baseUrl = '/api/users'
 
 interface createUserParameters {
   id: string,
-  user: string // user type
+  user: User
 }
 
 const createUser = async ({ id, user } : createUserParameters) => {

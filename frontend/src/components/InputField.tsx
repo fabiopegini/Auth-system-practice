@@ -4,7 +4,6 @@ interface Props extends ComponentPropsWithoutRef<'input'> {
   label?: string
 }
 
-
 const InputField = ({label, ...props } : Props) => {
   const { type = 'text', name, id } = props
   const [value, setValue] = useState('')

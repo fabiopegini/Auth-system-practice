@@ -1,9 +1,6 @@
-//Handle loading, 
-// errors, 
-// and submit handlers
-
 import { useState } from "react"
 import formService from "../services/formService"
+import validators from "../utils/validators"
 
 export const userRegisterForm = () => {
   const [loading, setLoading] = useState(false)
@@ -16,14 +13,16 @@ export const userRegisterForm = () => {
     const formData = new FormData(form)
     const fields = Object.fromEntries(formData)
 
-    // areValidFields(fields) before sending to backend
+    const validFields = validators.registerValidations(fields)
+
+    if(!validFields) return false // Implement later
 
     try {
       setError(false)
       setLoading(true)
-      const createdUser = await formService.createUser({ id: '', user: '' })
+      const createdUser = await formService.createUser({ id: '', user: { name: '', email: '', username: '', password: '' } })
 
-      if(createdUser) return true // redirect to login
+      if(createdUser) return true // Redirect to login or main something page
     } catch (err) {
       setError(true)
       throw new Error('Could not create the user')
@@ -31,7 +30,7 @@ export const userRegisterForm = () => {
       setLoading(false)
     }
 
-    return null
+    return null // Also not this, maybe nothing
   }
 
   return { loading, error, handleRegister }
