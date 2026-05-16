@@ -15,7 +15,7 @@ export const userRegisterForm = () => {
 
     const validFields = validators.registerValidations(fields)
 
-    if(!validFields) return false // Implement later
+    if(!validFields) return
 
     try {
       setError(false)

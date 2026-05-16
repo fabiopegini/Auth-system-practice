@@ -1,15 +1,31 @@
 .base_form {
-  padding: 1rem;
+  padding: 1.5rem 2.8rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  background-color: ghostwhite;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 2px 0 #222;
 }
 
 .container_input {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   gap: 0.3rem;
+}
+
+.title_lv2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #222;
+}
+
+.container_input > label {
+  align-self: flex-start;
+  font-size: 1.1rem;
+  font-weight: lighter;
 }
 
 .base_input {
@@ -18,7 +34,35 @@
   border: none;
   border-radius: 0.25rem;
   box-shadow: 0 0 2px 0 gray;
-  font-size: 1rem;
+  font-size: 0.9rem;
+}
+
+.base_input:focus {
+  outline: none;
+  background-color: #eef;
+  box-shadow: 0 0 1px 1px gray;
+}
+
+.input_error:focus {
+  box-shadow: 0 0 0 1px #d11;
+}
+
+.input_ok:focus {
+  box-shadow: 0 0 0 1px #1f1;
+}
+
+.input_msg {
+  position: absolute;
+  margin-top: 2.4rem;
+  font-size: 0.75rem;
+}
+
+.msg_error {
+  color: #d33;
+}
+
+.msg_ok {
+  color: green;
 }
 
 .base_button {
@@ -37,10 +81,9 @@
   cursor: pointer;
 }
 
-.title_lv2 {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #222;
+.base_button:active {
+  transform: scale(0.99);
+  background-color: #ccd;
 }
 
 .margin_t {
@@ -49,3 +92,4 @@
 .margin_b {
   margin-bottom: 1rem;
 }
+
