@@ -1,0 +1,1 @@
+// Definir una forma estandar de respuesta exitosa

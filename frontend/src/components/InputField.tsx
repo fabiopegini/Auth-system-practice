@@ -21,6 +21,7 @@ const InputField = ({
 
   const styles = props.className ? 'base_input ' + props.className : 'base_input' 
 
+  // Needs refactor so validation work with login (or can choose others)
   const handleChange = (ev: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
     const value = ev.target.value
     setValue(value)

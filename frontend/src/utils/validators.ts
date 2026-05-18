@@ -5,7 +5,6 @@ const isValid = {
     if(field.includes(' ')) return { ok: false, msg: 'Cannot have blank spaces' }
     if(!/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]/.test(field)) return { ok: false, msg: 'Name must start with a letter' }
     if(!/^[\wñÑáéíóúÁÉÍÓÚüÜ]{1,20}$/.test(field)) return { ok: false, msg: 'Name cannot be more than 20 characters long' }
-    if(!/^[\wñÑáéíóúÁÉÍÓÚüÜ]{1,20}$/.test(field)) return { ok: false, msg: 'Name cannot be more than 20 characters long' }
     return { ok: true, msg: 'Valid name' }
   },
   email: (field: string) => {
