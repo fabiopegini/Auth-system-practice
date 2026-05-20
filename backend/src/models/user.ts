@@ -1,35 +1,45 @@
-import type { UserInput } from "../schemas/user";
+import { type UserType } from '../schemas/user_types'
+
+const userSchemas = require('../schemas/user')
+const { UserModel: User } = userSchemas
+
 
 class UserModel {
+
   static getAll = async () => {
-    // FindAll db
+    const users = await User.find()
+    return users
   }
 
   static getById = async ({ id } : { id: string })  => {
-    // Findby id db
+    const user = await User.findById(id)
+    return user
   }
 
   static getByEmail = async ( { email } : { email: string }) => {
-    // Findby email db
+    const user = await User.find({ email })
+    return user
   }
 
-  static create = async ({ data } : { data: UserInput }) => {
+  static create = async ({ data } : { data: UserType }) => {
     const newUser = {
-      id: 'Generate here or in db',
-      createdAt: 'Timestamp',
+      createdAt: new Date(Date.now()),
       ...data
     }
 
-    // Save in db
+    const user = await User.save(newUser)
+    return user
   }
 
   static delete = async ({ id }: { id: string }) => {
-    // FindById and delete from db
+    const user = await User.findByIdAndDelete(id)
+    return user
   }
 
-  static update = async ({ id, data } : { id: string, data: UserInput }) => {
-   // FindById and Update in db 
+  static update = async ({ id, data } : { id: string, data: UserType  }) => {
+   const user = await User.findByIdAndUpdate(id, data, { returnDocument: 'after' })
+   return user
   }
 }
 
-module.exports = UserModel
+export = UserModel

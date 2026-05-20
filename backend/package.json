@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch ./src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,8 +12,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@nullix/zod-mongoose": "1.0.13",
+    "bcrypt": "6.0.0",
     "dotenv": "17.4.2",
     "express": "5.2.1",
+    "mongoose": "9.6.2",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -22,7 +25,7 @@
     "eslint": "10.4.0",
     "eslint-config-xo": "0.52.0",
     "prettier": "3.8.3",
-    "ts-node": "10.9.2",
+    "tsx": "4.22.3",
     "typescript": "6.0.3"
   }
 }

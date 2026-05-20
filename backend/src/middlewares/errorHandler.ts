@@ -6,4 +6,4 @@ const errorHandler: e.ErrorRequestHandler = (error, req, res, next) => {
   next(error)
 }
 
-module.exports = errorHandler
+export = errorHandler

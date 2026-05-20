@@ -24,4 +24,4 @@ class CustomError extends Error {
 const DatabaseConnectionError = new CustomError(500, errorCodes.db, errorMsg.db)
 const NotFoundError = new CustomError(404, errorCodes.notFound, errorMsg.notFound)
 
-module.exports = { CustomError, DatabaseConnectionError, NotFoundError }
+export = { CustomError, DatabaseConnectionError, NotFoundError }

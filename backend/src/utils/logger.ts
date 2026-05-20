@@ -5,3 +5,5 @@ const message = (...args: any) => {
 const error = (...args: any) => {
   console.error(...args)
 }
+
+export = { message, error }
