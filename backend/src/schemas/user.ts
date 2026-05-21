@@ -16,7 +16,8 @@ const UserRegisterSchema = z.object({
 const UserZodSchema = z.object({
   name: z.string().regex(/^[a-zA-Z]/).min(1).max(20),
   email: z.email(),
-  passwordHash: z.string()
+  passwordHash: z.string(),
+  createdAt: z.date().default(new Date(Date.now())).optional()
 })
 
 const validateUser = (input: any) => {
@@ -29,5 +30,19 @@ const validatePartialUser = (input: any) => {
 
 const UserSchema = zodMon.toMongooseSchema(UserZodSchema)
 const UserModel = mongoose.model('User', UserSchema)
+
+UserSchema.set('toJSON', {
+  transform: (document, objFromDb) => {
+    const returnedObject = objFromDb as any
+    returnedObject.id = returnedObject._id.toString()
+    
+    delete returnedObject._id
+    delete returnedObject.__v
+    delete returnedObject.passwordHash
+    delete returnedObject.createdAt
+
+    return returnedObject
+  }
+})
 
 export = { UserRegisterSchema, UserZodSchema, UserModel, validateUser, validatePartialUser }

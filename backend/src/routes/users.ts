@@ -6,11 +6,11 @@ const usersRouter: Router = express.Router()
 
 usersRouter.get('/', UserController.getAll)
 
-usersRouter.get('/:id', UserController.getById)
-
 usersRouter.get('/find', UserController.getByEmail)
 
-usersRouter.post('/:id', UserController.create)
+usersRouter.get('/:id', UserController.getById)
+
+usersRouter.post('/', UserController.create)
 
 usersRouter.patch('/:id', UserController.update)
 

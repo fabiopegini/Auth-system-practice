@@ -8,7 +8,7 @@ const startServer = async () => {
   await db.connect()
 
   const server = app.listen(config.PORT, () => {
-    console.log(`Server runs on http://localhost:${config.PORT}`)
+    console.log(`Server running on http://localhost:${config.PORT}`)
   })
 
   const closeServer = async () => {

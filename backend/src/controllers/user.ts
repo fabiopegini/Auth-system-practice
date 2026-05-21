@@ -1,32 +1,19 @@
 import type e = require("express")
+import { type UserType } from "../schemas/user_types"
+import responses = require('./user_utils')
 import UserModel = require('../models/user')
-import { type UserRegister } from "../schemas/user_types"
 import userSchemas = require('../schemas/user')
 const bcrypt = require('bcrypt')
 
+const { ResJSON, UserNotFoundJSON , InvalidIDJSON } = responses
 const { validateUser, validatePartialUser } = userSchemas
-
-class ResJSON {
-  public data: UserRegister[]
-  public ok: boolean
-  public msg: string
-
-  constructor(data: UserRegister[], ok: boolean, msg: string) {
-    this.data = data
-    this.ok = ok
-    this.msg = msg
-  }
-}
-
-const UserNotFoundJSON = new ResJSON([], false, 'User not found')
-const InvalidIDJSON = new ResJSON([], false, 'Invalid id')
 
 class UsersController {
   static getAll: e.RequestHandler = async (req, res, next) => {
     try {
-      const users: UserRegister[] = await UserModel.getAll()
+      const users: UserType[] = await UserModel.getAll()
 
-      if(!users) return res.status(404).json(new ResJSON([], false, 'Could not found any users'))
+      if(!users.length) return res.status(404).json(new ResJSON([], false, 'Could not found any users'))
 
       return res.status(200).json(new ResJSON(users, true, 'All users found'))
     } catch (error) {
@@ -40,7 +27,7 @@ class UsersController {
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
 
     try {
-      const user = await UserModel.getById({ id })
+      const [user] = await UserModel.getById({ id })
 
       if(!user) return res.status(404).json(UserNotFoundJSON)
 
@@ -51,10 +38,12 @@ class UsersController {
   }
 
   static getByEmail: e.RequestHandler = async (req, res, next) => {
+    if(!req.body?.email) return res.status(400).json(new ResJSON([], false, 'Email was not provided'))
+    
     const { email } = req.body
 
     try {
-      const user = await UserModel.getByEmail({ email })
+      const [user] = await UserModel.getByEmail({ email })
 
       if(!user) return res.status(404).json(UserNotFoundJSON)
 
@@ -67,33 +56,29 @@ class UsersController {
   static create: e.RequestHandler = async (req, res, next) => {
     const body = req.body
 
-    if(!body.password) return res.status(400).json(new ResJSON([], false, 'Missing password field'))
+    if(!body.name || !body.email || !body.password) return res.status(400).json(new ResJSON([], false, 'Missing fields'))
 
     const saltRounds = 10
-
-    const passwordHash: string = bcrypt.hash(body.password, saltRounds)
-
+    const passwordHash: string = await bcrypt.hash(body.password, saltRounds)
     if(!passwordHash) return res.status(500).json(new ResJSON([], false, 'Server error'))
 
-    body.password = undefined
+    const { name, email } = body
 
     const newUser = {
-      passwordHash,
-      ...body
+      name,
+      email,
+      passwordHash
     }
 
     const isValidUser = validateUser(newUser)
-
-    // CHECK ISVALIDUSER FOR REFACTOR
-    console.log(isValidUser)
-    if(!isValidUser) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
+    if(!isValidUser.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
 
     try {
-      const user = await UserModel.create({data: newUser})
+      const [user] = await UserModel.create({data: newUser})
+      
+      if(!user) return res.status(404).json(new ResJSON([], false, 'Email is already in use'))
 
-      if(!user) return res.status(404).json(new ResJSON([], false, 'Could not create the user'))
-
-      return res.status(201).json(new ResJSON(user, true, 'User created successfully'))
+      return res.status(201).json(new ResJSON([user], true, 'User created successfully'))
     } catch (error) {
       next(error)
     }
@@ -105,7 +90,7 @@ class UsersController {
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
 
     try {
-      const user = await UserModel.delete({ id })
+      const [user] = await UserModel.delete({ id })
   
       if(!user) return res.status(404).json(new ResJSON([], false, 'The user you tried to delete was not found'))
   
@@ -120,15 +105,37 @@ class UsersController {
     const body = req.body
 
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
+    if(!body) return res.status(400).json(new ResJSON([], false, 'No data was send'))
+    
+    let newUserData = body
 
-    const isValidUser = validatePartialUser(body)
+    if(body.password) {
+      const saltRounds = 10
+      const passwordHash: string = await bcrypt.hash(body.password, saltRounds)
+ 
+      if(!passwordHash) return res.status(500).json(new ResJSON([], false, 'Server error'))
 
-    // CHECK ISVALIDUSER FOR REFACTOR
-    console.log(isValidUser)
-    if(!isValidUser) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
+      const { password, createdAt, ...dataWithoutRawPassword } = newUserData
+
+      newUserData = {
+        passwordHash,
+        ...dataWithoutRawPassword
+      }
+    }
+
+    if(body.email) {
+      const [user] = await UserModel.getByEmail({ email: body.email })
+
+      if(user) return res.status(400).json(new ResJSON([], false, 'Email already in use'))
+      // IMPLEMENT WHEN AUTH TOKENs
+      // if(user && user.email === CURRENT_USER) = 'ALLOW CHANGE EMAIL, ELSE NOT'
+    }
+
+    const isValidUser = validatePartialUser(newUserData)
+    if(!isValidUser.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
 
     try {
-      const user = await UserModel.update({ id, data: body })
+      const [user] = await UserModel.update({ id, data: newUserData })
       
       if(!user) return res.status(404).json(new ResJSON([], false, 'Could not update the user'))
       
