@@ -12,6 +12,8 @@ usersRouter.get('/:id', UserController.getById)
 
 usersRouter.post('/', UserController.create)
 
+usersRouter.post('/login', UserController.login)
+
 usersRouter.patch('/:id', UserController.update)
 
 usersRouter.delete('/:id', UserController.delete)

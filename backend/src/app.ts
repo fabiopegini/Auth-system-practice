@@ -1,9 +1,9 @@
 import type e = require("express")
-import {type Application} from "express"
+import { type Application } from "express"
 import express = require('express')
-import errorHandler = require('./middlewares/errorHandler')
 import usersRouter = require('./routes/users')
 import requestLogger = require("./middlewares/requestLogger")
+import errorHandler = require('./middlewares/errorHandler')
 
 
 const app: Application = express()

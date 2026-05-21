@@ -13,6 +13,11 @@ const UserRegisterSchema = z.object({
   .regex(/(?=\S*[^\w\s]|_)/, { error: 'Password must have at least one special character'})
 })
 
+const UserZodLoginSchema = z.object({
+  email: z.email({error: 'Not a valid email'}).min(1, 'Email field cannot be empty'),
+  password: z.string().min(1, 'Password field cannot be empty')
+})
+
 const UserZodSchema = z.object({
   name: z.string().regex(/^[a-zA-Z]/).min(1).max(20),
   email: z.email(),
@@ -29,7 +34,9 @@ const validatePartialUser = (input: any) => {
 }
 
 const UserSchema = zodMon.toMongooseSchema(UserZodSchema)
+const UserLoginSchema = zodMon.toMongooseSchema(UserZodLoginSchema)
 const UserModel = mongoose.model('User', UserSchema)
+const LoginModel = mongoose.model('Login', UserLoginSchema)
 
 UserSchema.set('toJSON', {
   transform: (document, objFromDb) => {
@@ -45,4 +52,4 @@ UserSchema.set('toJSON', {
   }
 })
 
-export = { UserRegisterSchema, UserZodSchema, UserModel, validateUser, validatePartialUser }
+export = { UserRegisterSchema, UserZodSchema, UserModel, UserZodLoginSchema, LoginModel, validateUser, validatePartialUser }

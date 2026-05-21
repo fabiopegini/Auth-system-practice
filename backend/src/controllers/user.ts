@@ -1,15 +1,17 @@
-import type e = require("express")
+import { type RequestHandler } from "express"
 import { type UserType } from "../schemas/user_types"
-import responses = require('./user_utils')
+import responses = require('./utils')
 import UserModel = require('../models/user')
 import userSchemas = require('../schemas/user')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+import config = require("../config/config")
 
 const { ResJSON, UserNotFoundJSON , InvalidIDJSON } = responses
 const { validateUser, validatePartialUser } = userSchemas
 
 class UsersController {
-  static getAll: e.RequestHandler = async (req, res, next) => {
+  static getAll: RequestHandler = async (req, res, next) => {
     try {
       const users: UserType[] = await UserModel.getAll()
 
@@ -21,7 +23,7 @@ class UsersController {
     }
   }
 
-  static getById: e.RequestHandler = async (req, res, next) => {
+  static getById: RequestHandler = async (req, res, next) => {
     const { id } = req.params
 
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
@@ -37,7 +39,7 @@ class UsersController {
     }
   }
 
-  static getByEmail: e.RequestHandler = async (req, res, next) => {
+  static getByEmail: RequestHandler = async (req, res, next) => {
     if(!req.body?.email) return res.status(400).json(new ResJSON([], false, 'Email was not provided'))
     
     const { email } = req.body
@@ -53,7 +55,7 @@ class UsersController {
     }
   }
 
-  static create: e.RequestHandler = async (req, res, next) => {
+  static create: RequestHandler = async (req, res, next) => {
     const body = req.body
 
     if(!body.name || !body.email || !body.password) return res.status(400).json(new ResJSON([], false, 'Missing fields'))
@@ -84,7 +86,7 @@ class UsersController {
     }
   } 
 
-  static delete: e.RequestHandler = async (req, res, next) => {
+  static delete: RequestHandler = async (req, res, next) => {
     const { id } = req.params
 
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
@@ -100,7 +102,7 @@ class UsersController {
     }
   }
 
-  static update: e.RequestHandler = async (req, res, next) => {
+  static update: RequestHandler = async (req, res, next) => {
     const { id } = req.params
     const body = req.body
 
@@ -127,7 +129,7 @@ class UsersController {
       const [user] = await UserModel.getByEmail({ email: body.email })
 
       if(user) return res.status(400).json(new ResJSON([], false, 'Email already in use'))
-      // IMPLEMENT WHEN AUTH TOKENs
+      // IMPLEMENT WHEN AUTH TOKEN
       // if(user && user.email === CURRENT_USER) = 'ALLOW CHANGE EMAIL, ELSE NOT'
     }
 
@@ -143,6 +145,34 @@ class UsersController {
     } catch (error) {
       next(error)
     }
+  }
+
+  static login: RequestHandler = async (req, res, next) => {
+    const { email, password } = req.body
+
+    if(!email || !password) return res.status(400).json(new ResJSON([], false, 'Missing fields, must provide email and password'))
+
+    // Add zod validation
+
+    try {
+      const [user] = await UserModel.getByEmail({ email })
+
+      const isCorrectPassword: boolean = !user ? false : await bcrypt.compare(password, user.passwordHash)
+
+      if(!user || !isCorrectPassword) return res.status(401).json(new ResJSON([], false, 'Invalid credentials'))
+
+      const payload = {
+        email,
+        id: user._id.toString()
+      }
+
+      const token = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '1h' })
+
+      return res.status(200).json(new ResJSON([token, { name: user.name, email }], true, 'Access granted'))
+    } catch (error) {
+      next(error)
+    }
+
   }
 }
 
