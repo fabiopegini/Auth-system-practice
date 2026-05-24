@@ -33,6 +33,10 @@ const validatePartialUser = (input: any) => {
   return UserZodSchema.partial().safeParse(input)
 }
 
+const validateLoginUser = (input: any) => {
+  return UserZodLoginSchema.safeParse(input)
+}
+
 const UserSchema = zodMon.toMongooseSchema(UserZodSchema)
 const UserLoginSchema = zodMon.toMongooseSchema(UserZodLoginSchema)
 const UserModel = mongoose.model('User', UserSchema)
@@ -52,4 +56,4 @@ UserSchema.set('toJSON', {
   }
 })
 
-export = { UserRegisterSchema, UserZodSchema, UserModel, UserZodLoginSchema, LoginModel, validateUser, validatePartialUser }
+export = { UserRegisterSchema, UserZodSchema, UserModel, UserZodLoginSchema, LoginModel, validateUser, validatePartialUser, validateLoginUser }

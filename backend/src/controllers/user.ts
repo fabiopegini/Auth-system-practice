@@ -6,9 +6,10 @@ import userSchemas = require('../schemas/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 import config = require("../config/config")
+import { PayloadType } from "../types/jwt"
 
 const { ResJSON, UserNotFoundJSON , InvalidIDJSON } = responses
-const { validateUser, validatePartialUser } = userSchemas
+const { validateUser, validatePartialUser, validateLoginUser } = userSchemas
 
 class UsersController {
   static getAll: RequestHandler = async (req, res, next) => {
@@ -72,8 +73,8 @@ class UsersController {
       passwordHash
     }
 
-    const isValidUser = validateUser(newUser)
-    if(!isValidUser.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
+    const userValidation = validateUser(newUser)
+    if(!userValidation.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
 
     try {
       const [user] = await UserModel.create({data: newUser})
@@ -133,8 +134,8 @@ class UsersController {
       // if(user && user.email === CURRENT_USER) = 'ALLOW CHANGE EMAIL, ELSE NOT'
     }
 
-    const isValidUser = validatePartialUser(newUserData)
-    if(!isValidUser.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
+    const userValidation = validatePartialUser(newUserData)
+    if(!userValidation.success) return res.status(400).json(new ResJSON([], false, 'One or more fields are not valid'))
 
     try {
       const [user] = await UserModel.update({ id, data: newUserData })
@@ -152,7 +153,8 @@ class UsersController {
 
     if(!email || !password) return res.status(400).json(new ResJSON([], false, 'Missing fields, must provide email and password'))
 
-    // Add zod validation
+    const userValidation = validateLoginUser({ email, password })
+    if(!userValidation.success) return res.status(400).json(new ResJSON([], false, 'One or more fields have a wrong format'))
 
     try {
       const [user] = await UserModel.getByEmail({ email })
@@ -161,7 +163,7 @@ class UsersController {
 
       if(!user || !isCorrectPassword) return res.status(401).json(new ResJSON([], false, 'Invalid credentials'))
 
-      const payload = {
+      const payload: PayloadType = {
         email,
         id: user._id.toString()
       }
@@ -172,7 +174,6 @@ class UsersController {
     } catch (error) {
       next(error)
     }
-
   }
 }
 
