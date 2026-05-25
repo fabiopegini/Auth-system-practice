@@ -1,5 +1,5 @@
 import { type RequestHandler } from "express"
-import { type UserType } from "../schemas/user_types"
+import { MinimalUserInfo, type UserType } from "../schemas/user_types"
 import responses = require('./utils')
 import UserModel = require('../models/user')
 import userSchemas = require('../schemas/user')
@@ -106,7 +106,9 @@ class UsersController {
   static update: RequestHandler = async (req, res, next) => {
     const { id } = req.params
     const body = req.body
+    const userFromToken = req.user
 
+    if(userFromToken?.id !== id) return res.status(403).json(new ResJSON([], false, 'Cannot update this user'))
     if(typeof id !== 'string') return res.status(400).json(InvalidIDJSON)
     if(!body) return res.status(400).json(new ResJSON([], false, 'No data was send'))
     
@@ -130,8 +132,6 @@ class UsersController {
       const [user] = await UserModel.getByEmail({ email: body.email })
 
       if(user) return res.status(400).json(new ResJSON([], false, 'Email already in use'))
-      // IMPLEMENT WHEN AUTH TOKEN
-      // if(user && user.email === CURRENT_USER) = 'ALLOW CHANGE EMAIL, ELSE NOT'
     }
 
     const userValidation = validatePartialUser(newUserData)
@@ -170,7 +170,16 @@ class UsersController {
 
       const token = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '1h' })
 
-      return res.status(200).json(new ResJSON([token, { name: user.name, email }], true, 'Access granted'))
+      res.cookie('authorization', token, { 
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: 1000 * 60 * 60,
+        path: '/'
+      })
+
+      const userForRes = { name: user.name } as MinimalUserInfo
+
+      return res.status(200).json(new ResJSON([userForRes], true, 'Access granted'))
     } catch (error) {
       next(error)
     }

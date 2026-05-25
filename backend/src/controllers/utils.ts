@@ -1,7 +1,7 @@
-import { type UserType } from "../schemas/user_types"
+import { type MinimalUserInfo, type UserType } from "../schemas/user_types"
 
 class ResJSON {
-  public data: UserType[]
+  public data: UserType[] | MinimalUserInfo[]
   public ok: boolean
   public msg: string
 

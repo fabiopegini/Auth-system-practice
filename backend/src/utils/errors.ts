@@ -1,11 +1,13 @@
 const errorCodes = {
   db: 'DB_CONNECTION_FAILURE',
-  notFound: 'RESOURCE_NOT_FOUND'
+  notFound: 'RESOURCE_NOT_FOUND',
+  token: 'INVALID_TOKEN'
 }
 
 const errorMsg = {
   db: 'Could not connect to database',
-  notFound: 'Could not found the resource'
+  notFound: 'Could not found the resource',
+  token: 'Invalid token'
 }
 
 class CustomError extends Error {
@@ -21,7 +23,8 @@ class CustomError extends Error {
   }
 }
 
+const InvalidTokenError = new CustomError(401, errorCodes.token, errorMsg.token)
 const DatabaseConnectionError = new CustomError(500, errorCodes.db, errorMsg.db)
 const NotFoundError = new CustomError(404, errorCodes.notFound, errorMsg.notFound)
 
-export = { CustomError, DatabaseConnectionError, NotFoundError }
+export = { DatabaseConnectionError, NotFoundError ,InvalidTokenError, errorCodes, errorMsg }
