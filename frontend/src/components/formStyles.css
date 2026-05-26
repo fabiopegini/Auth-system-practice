@@ -86,10 +86,15 @@
   background-color: #ccd;
 }
 
+.base_button:disabled {
+  cursor: not-allowed;
+  transform: scale(0.99);
+  background-color: #eee;
+}
+
 .margin_t {
   margin-top: 1rem;
 }
 .margin_b {
   margin-bottom: 1rem;
 }
-

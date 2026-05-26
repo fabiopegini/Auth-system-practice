@@ -17,7 +17,7 @@ app.get('/', (req: e.Request, res: e.Response) => {
   res.send({ welcome: 'Hi there!' })
 })
 
-app.use('/users', usersRouter)
+app.use('/api/users', usersRouter)
 
 app.use(errorHandler)
 

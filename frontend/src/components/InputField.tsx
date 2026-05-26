@@ -42,7 +42,7 @@ const InputField = ({
       return
     }
     else {
-      if(value.length < 5) return
+      if(value.length < 4) return
       if(!result.ok) {
         setInputStatus('error')
         setMsg(result.msg)

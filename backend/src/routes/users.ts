@@ -11,7 +11,7 @@ usersRouter.get('/find', UserController.getByEmail)
 
 usersRouter.get('/:id', UserController.getById)
 
-usersRouter.post('/', extractUser, UserController.create)
+usersRouter.post('/', UserController.create)
 
 usersRouter.post('/login', UserController.login)
 

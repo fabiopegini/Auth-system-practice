@@ -1,40 +1,54 @@
-// API calls register/login 
-// Token handlers for login
 interface User {
-  name: string,
-  email: string,
-  username: string,
-  password: string
+  name: string;
+  email: string;
+  password: string;
 }
 
-const baseUrl = '/api/users'
+const baseUrl = "/api/users";
 
-interface createUserParameters {
-  id: string,
-  user: User
+interface LoginUser {
+  email: string;
+  password: string;
 }
 
-const createUser = async ({ id, user } : createUserParameters) => {
-  
+const createUser = async (user: User) => {
   try {
-    const headers = new Headers()
-    headers.append('Content-type', 'application/json')
+    const headers = new Headers();
+    headers.append("Content-type", "application/json");
 
-    const options = { 
-      method: 'POST', 
+    const options = {
+      method: "POST",
       headers,
-      body: JSON.stringify(user)
-    }
+      body: JSON.stringify(user),
+    };
 
-    const response = await fetch(baseUrl + `/${id}`, options)
-    
-    const data = response.json()
-    return data
+    const response = await fetch(baseUrl, options);
 
-  } catch(err) {
-    throw new Error('Could not create the user')
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    return err;
   }
+};
 
-}
+const loginUser = async ({ email, password }: LoginUser) => {
+  try {
+    const headers = new Headers();
+    headers.append("Content-type", "application/json");
 
-export default { createUser }
+    const options = {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ email, password }),
+    };
+
+    const response = await fetch(`${baseUrl}/login`, options);
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
+
+export default { createUser, loginUser };
